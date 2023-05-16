@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const LoginPage = () => {
     }
 
     toast("Login succesfully!", { type: "success" });
-    navigate("/main");
+    navigate("/");
   };
 
   return (
