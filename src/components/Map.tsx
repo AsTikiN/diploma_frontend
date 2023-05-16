@@ -104,7 +104,7 @@ const Map: FC<Props> = ({
   };
 
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyBpFBe9xQa9BlrfC0tVgLlVib1VfNPjZYA",
+    googleMapsApiKey: "AIzaSyDuBBVGj6vOXKk2NGmBNfKIdrtD75iW3bU",
     libraries: ["places"],
   });
 
