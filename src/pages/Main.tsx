@@ -10,10 +10,15 @@ import {
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { getIsAuthorized, getRights } from "../redux/reducers/authReducer";
+import {
+  getIsAuthorized,
+  getRights,
+  getUserId,
+} from "../redux/reducers/authReducer";
 import axios from "axios";
 import { baseUrl, drive } from "../axiosConfig";
 import FreeDriveCard from "../components/Card/FreeDriveCard";
+import Arrow from "../images/arrow";
 
 interface Cord {
   lat: number;
@@ -41,8 +46,11 @@ const Main = () => {
     avatar: "",
   });
   const [freeDrives, setFreeDrives] = useState([]);
-  const rights = useSelector(getRights);
+  const [isModalOpened, setIsModalOpened] = useState(false);
 
+  const rights = useSelector(getRights);
+  const personId = useSelector(getUserId);
+  console.log(23123, personId);
   const handleClearPath = () => {
     setMapRoute(null);
     setMarkers([]);
@@ -60,6 +68,13 @@ const Main = () => {
   const handleFindDriver = () => {
     setDriver((prev) => ({ ...prev, isLoading: true }));
     toast("We are trying to find driver!", { type: "default" });
+    axios.post(baseUrl + drive, {
+      price: calcPrice(),
+      date: new Date(),
+      distance: path?.len,
+      userId: personId,
+      path: JSON.stringify(path),
+    });
   };
 
   useEffect(() => {
@@ -72,6 +87,18 @@ const Main = () => {
     console.log(20130123, drives);
     if (drives.data.length) setFreeDrives(drives.data);
   };
+
+  const handleStart = (currentDrive: any) => async () => {
+    console.log(currentDrive);
+    if (!currentDrive) return;
+    const updated = await axios.put(baseUrl + drive + "/" + currentDrive._id, {
+      ...currentDrive,
+      driverId: personId,
+    });
+    setMarkers(JSON.parse(currentDrive.path)?.markers);
+    console.log(2002412, currentDrive);
+  };
+
   console.log(123213, freeDrives);
   return (
     <MapWrapper>
@@ -86,7 +113,20 @@ const Main = () => {
         setPath={setPath}
         path={path}
       />
-      <OwnModal show={path?.markers?.length > 1 || rights === "driver"}>
+      <OwnModal
+        show={
+          (path?.markers?.length > 1 || rights === "driver") && isModalOpened
+        }
+      >
+        {(path?.markers?.length > 1 || rights === "driver") && (
+          <ToggleModal
+            className="modal-toggler"
+            onClick={() => setIsModalOpened((prev) => !prev)}
+          >
+            <Arrow />
+          </ToggleModal>
+        )}
+
         {rights === "passanger" && (
           <>
             <Typography>Distance: {path?.len || 0}</Typography>
@@ -130,11 +170,23 @@ const Main = () => {
             )}
           </>
         )}
-        {rights === "driver" &&
-          freeDrives &&
-          freeDrives?.map((drive: any, index) => (
-            <FreeDriveCard data={drive} key={drive._id} />
-          ))}
+        {rights === "driver" && freeDrives && (
+          <Box
+            sx={{
+              overflowY: "auto",
+              maxHeight: "300px",
+              paddingBottom: "45px",
+            }}
+          >
+            {freeDrives?.map((drive: any, index) => (
+              <FreeDriveCard
+                data={drive}
+                key={drive._id}
+                onStart={handleStart(drive)}
+              />
+            ))}
+          </Box>
+        )}
       </OwnModal>
     </MapWrapper>
   );
@@ -165,7 +217,28 @@ const OwnModal = styled("div")<{ show: boolean }>((props) => ({
   transition: "transform 0.3s linear",
   transform: props.show ? "translate(0, 0)" : "translate(0, 100%)",
   padding: "30px 10px",
+  maxHeight: "300px",
+
+  "& .modal-toggler": {
+    top: props.show ? "-50px" : "-135px",
+    transform: props.show
+      ? "translateX(-50%) rotate(90deg)"
+      : "translateX(-50%) rotate(-90deg)",
+  },
 }));
+
+const ToggleModal = styled("div")({
+  position: "absolute",
+  left: "50%",
+  top: "-50px",
+  transform: "translateX(-50%) rotate(90deg)",
+  transition: "transform 0.1s linear, top 0.3s linear",
+
+  "svg path": {
+    fill: "#000",
+    opacity: "0.5",
+  },
+});
 
 const Actions = styled("div")({
   display: "flex",

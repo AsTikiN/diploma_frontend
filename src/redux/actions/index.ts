@@ -27,7 +27,11 @@ export const InitSaunterList = (list: Saunter[]) => ({
   payload: list,
 });
 
-export const setRights = (rights: Rights) => ({
+export const setRights = (
+  rights: Rights,
+  _id: number | null,
+  isAuthorizated: boolean
+) => ({
   type: ActionsTypes.SET_RIGHTS,
-  payload: rights,
+  payload: { rights, _id, isAuthorizated },
 });

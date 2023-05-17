@@ -47,11 +47,10 @@ const LoginPage = () => {
           },
         }
       );
-      const { isAuthorized, rights } = answer.data;
-      console.log(1234324, answer.data);
+      const { isAuthorized, rights, id } = answer.data;
       if (isAuthorized) {
         toast("Login succesfully!", { type: "success" });
-        dispatch(setRights(rights));
+        dispatch(setRights(rights, id, true));
         navigate("/");
       }
     } catch (e: any) {

@@ -23,7 +23,22 @@ const Modal: FC<Props> = ({ open, setOpen }): ReactElement => {
   const [shortDesc, setShortDesc] = useState<string>("");
   const [fullDesc, setFullDesc] = useState<string>("");
   const [markerMode, setMarkerMode] = useState<boolean>(false);
-  const [path, setPath] = useState<any>(null);
+  const [path, setPath] = useState<any>();
+  const [defaultProps, setDefaultProps] = useState({
+    center: {
+      lat: 48.460255107435785,
+      lng: 35.044156794967655,
+    },
+    zoom: 14,
+  });
+  const [mapRoute, setMapRoute] = useState<any>(null);
+  const [markers, setMarkers] = useState<any[]>([]);
+  const [driver, setDriver] = useState({
+    isLoading: false,
+    name: "Alexandr",
+    avatar: "",
+  });
+  const [freeDrives, setFreeDrives] = useState([]);
 
   const database = useContext(DatabaseContext);
   const { addSaunter } = useActions();
@@ -31,10 +46,6 @@ const Modal: FC<Props> = ({ open, setOpen }): ReactElement => {
   const handleAddMarkerClick = (e: React.MouseEvent<HTMLButtonElement>) =>
     setMarkerMode(!markerMode);
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!shortDesc || !fullDesc || !path || !title) {
-      throw new Error("All fields should be selected");
-    }
-
     const unicId = Math.round(Math.random() * 10000);
     const newSaunter = {
       id: unicId,
@@ -44,6 +55,10 @@ const Modal: FC<Props> = ({ open, setOpen }): ReactElement => {
       isFavourite: false,
       path: JSON.stringify(path),
     };
+    console.log(200200, newSaunter);
+    if (!shortDesc || !fullDesc || !path || !title) {
+      throw new Error("All fields should be selected");
+    }
 
     set(ref(database, `saunters/${unicId}`), newSaunter).then(
       addSaunter.bind(null, newSaunter)
@@ -131,7 +146,17 @@ const Modal: FC<Props> = ({ open, setOpen }): ReactElement => {
                 </>
               </Button>
             </EditModeButton>
-            {/* <Map editMode={markerMode} setPath={setPath} path={path}/> */}
+            <Map
+              defaultProps={defaultProps}
+              setDefaultProps={setDefaultProps}
+              mapRoute={mapRoute}
+              setMapRoute={setMapRoute}
+              markers={markers}
+              setMarkers={setMarkers}
+              editMode={true}
+              setPath={setPath}
+              path={path}
+            />
           </MapWrapper>
         </Wrapper>
       </Box>

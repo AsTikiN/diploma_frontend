@@ -7,4 +7,4 @@ export interface Saunter {
   path: any;
 }
 
-export type Rights = "driver" | "passanger";
+export type Rights = "driver" | "passanger" | null;

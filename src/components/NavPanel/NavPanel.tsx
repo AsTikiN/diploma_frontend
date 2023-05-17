@@ -6,13 +6,15 @@ import HomeIcon from "../../images/home";
 import History from "../../images/history";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getIsAuthorized } from "../../redux/reducers/authReducer";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { setRights } from "../../redux/actions";
 
 const NavPanel = () => {
   const isAuthorized = useSelector(getIsAuthorized);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const onNav = (route: string) => () => {
     if (!isAuthorized) {
@@ -25,7 +27,7 @@ const NavPanel = () => {
 
   return (
     <Wrapper>
-      <Box sx={{ cursor: "pointer" }} onClick={onNav("/home")}>
+      <Box sx={{ cursor: "pointer" }} onClick={onNav("/")}>
         <HomeIcon />
       </Box>
       <Box sx={{ cursor: "pointer" }} onClick={onNav("/history")}>
@@ -34,7 +36,13 @@ const NavPanel = () => {
       <Box sx={{ cursor: "pointer" }} onClick={onNav("/profile")}>
         <ProfileUser />
       </Box>
-      <Box sx={{ cursor: "pointer" }} onClick={onNav("/login")}>
+      <Box
+        sx={{ cursor: "pointer" }}
+        onClick={() => {
+          onNav("/login")();
+          dispatch(setRights(null, null, false));
+        }}
+      >
         <LoginIcon />
       </Box>
     </Wrapper>
