@@ -16,6 +16,7 @@ import Main from "./pages/Main";
 import Profile from "./pages/Profile";
 import NavPanel from "./components/NavPanel/NavPanel";
 import History from "./pages/History";
+import Router from "./Router";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCiO-Rrn1VDWomqcfomseNDLfN25AJojgs",
@@ -38,14 +39,16 @@ function App() {
     <Provider store={store}>
       <DatabaseContext.Provider value={database}>
         <BrowserRouter>
-          <Routes>
-            <Route path={"/login"} element={<Login />} />
-            <Route path={"/register"} element={<Register />} />
-            <Route path={"/profile"} element={<Profile />} />
-            <Route path={"/history"} element={<History />} />
-            <Route path={"/"} element={<Main />} />
-          </Routes>
-          <NavPanel />
+          <Router>
+            <Routes>
+              <Route path={"/login"} element={<Login />} />
+              <Route path={"/register"} element={<Register />} />
+              <Route path={"/profile"} element={<Profile />} />
+              <Route path={"/history"} element={<History />} />
+              <Route path={"/"} element={<Main />} />
+            </Routes>
+            <NavPanel />
+          </Router>
         </BrowserRouter>
         <ToastContainer
           position="top-right"

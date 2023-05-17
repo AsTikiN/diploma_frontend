@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { getRights } from "../redux/reducers/authReducer";
+import { getIsAuthorized, getRights } from "../redux/reducers/authReducer";
 import axios from "axios";
 import { baseUrl, drive } from "../axiosConfig";
 import FreeDriveCard from "../components/Card/FreeDriveCard";

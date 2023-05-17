@@ -1,26 +1,42 @@
-import { styled } from "@mui/material";
+import { Box, styled } from "@mui/material";
 import React from "react";
 import ProfileUser from "../../images/profile-user";
 import LoginIcon from "../../images/login";
 import HomeIcon from "../../images/home";
 import History from "../../images/history";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getIsAuthorized } from "../../redux/reducers/authReducer";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const NavPanel = () => {
+  const isAuthorized = useSelector(getIsAuthorized);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const onNav = (route: string) => () => {
+    if (!isAuthorized) {
+      navigate("/login");
+      toast("You must be logined!", { type: "error" });
+      return;
+    }
+    navigate(route);
+  };
+
   return (
     <Wrapper>
-      <Link to="/">
+      <Box sx={{ cursor: "pointer" }} onClick={onNav("/home")}>
         <HomeIcon />
-      </Link>
-      <Link to="/history">
+      </Box>
+      <Box sx={{ cursor: "pointer" }} onClick={onNav("/history")}>
         <History />
-      </Link>
-      <Link to="/profile">
+      </Box>
+      <Box sx={{ cursor: "pointer" }} onClick={onNav("/profile")}>
         <ProfileUser />
-      </Link>
-      <Link to="/login">
+      </Box>
+      <Box sx={{ cursor: "pointer" }} onClick={onNav("/login")}>
         <LoginIcon />
-      </Link>
+      </Box>
     </Wrapper>
   );
 };
