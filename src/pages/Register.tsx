@@ -10,6 +10,8 @@ import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { baseUrl, user } from "../axiosConfig";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -35,9 +37,23 @@ const RegisterPage = () => {
       toast("Password should contain 8 or more symbols!", { type: "error" });
       return;
     }
+    console.log(200);
+    registerServer();
+  };
 
-    toast("Account succesfully added!", { type: "success" });
-    navigate("/login");
+  const registerServer = async () => {
+    try {
+      const message = await axios.post(baseUrl + user, {
+        name,
+        email,
+        password,
+        rights: driver ? "driver" : "passanger",
+      });
+      toast("Account succesfully added!", { type: "success" });
+      navigate("/login");
+    } catch (e: any) {
+      toast(e.response.data, { type: "error" });
+    }
   };
 
   return (

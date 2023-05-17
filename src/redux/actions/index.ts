@@ -1,4 +1,4 @@
-import { Saunter } from "../../types";
+import { Rights, Saunter } from "../../types";
 
 import { ActionsTypes } from "../actions/ActionsTypes";
 
@@ -25,4 +25,9 @@ export const selectSaunter = (id: number) => ({
 export const InitSaunterList = (list: Saunter[]) => ({
   type: ActionsTypes.INIT_SAUNTER_LIST,
   payload: list,
-})
+});
+
+export const setRights = (rights: Rights) => ({
+  type: ActionsTypes.SET_RIGHTS,
+  payload: rights,
+});

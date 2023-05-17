@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Map from "../components/Map";
 import React from "react";
 import {
@@ -8,6 +8,12 @@ import {
   Typography,
   styled,
 } from "@mui/material";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { getRights } from "../redux/reducers/authReducer";
+import axios from "axios";
+import { baseUrl, drive } from "../axiosConfig";
+import FreeDriveCard from "../components/Card/FreeDriveCard";
 
 interface Cord {
   lat: number;
@@ -34,7 +40,8 @@ const Main = () => {
     name: "Alexandr",
     avatar: "",
   });
-  console.log(mapRoute);
+  const [freeDrives, setFreeDrives] = useState([]);
+  const rights = useSelector(getRights);
 
   const handleClearPath = () => {
     setMapRoute(null);
@@ -52,8 +59,20 @@ const Main = () => {
 
   const handleFindDriver = () => {
     setDriver((prev) => ({ ...prev, isLoading: true }));
+    toast("We are trying to find driver!", { type: "default" });
   };
 
+  useEffect(() => {
+    if (rights !== "driver") return;
+    fetchAvailibleDrives();
+  }, [rights]);
+
+  const fetchAvailibleDrives = async () => {
+    const drives: any = await axios.get(baseUrl + drive + "/free");
+    console.log(20130123, drives);
+    if (drives.data.length) setFreeDrives(drives.data);
+  };
+  console.log(123213, freeDrives);
   return (
     <MapWrapper>
       <Map
@@ -63,46 +82,59 @@ const Main = () => {
         setMapRoute={setMapRoute}
         markers={markers}
         setMarkers={setMarkers}
-        editMode={true}
+        editMode={rights === "passanger"}
         setPath={setPath}
         path={path}
       />
-      <OwnModal show={path?.markers?.length > 1}>
-        <Typography>Distance: {path?.len || 0}</Typography>
-        <Typography>Price: {calcPrice()} GRN</Typography>
-        {driver.isLoading ? (
+      <OwnModal show={path?.markers?.length > 1 || rights === "driver"}>
+        {rights === "passanger" && (
           <>
-            <Box display="flex" flexDirection="column" alignItems="center">
-              <CircularProgress />
-              <Typography>Trying to find driver</Typography>
-            </Box>
-            <Button
-              sx={{ mt: 1.5 }}
-              fullWidth
-              color="error"
-              variant="contained"
-              onClick={() =>
-                setDriver((prev) => ({ ...prev, isLoading: false }))
-              }
-            >
-              Cancel
-            </Button>
+            <Typography>Distance: {path?.len || 0}</Typography>
+            <Typography>Price: {calcPrice()} GRN</Typography>
+            {driver.isLoading ? (
+              <>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <CircularProgress />
+                  <Typography>Trying to find driver</Typography>
+                </Box>
+                <Button
+                  sx={{ mt: 1.5 }}
+                  fullWidth
+                  color="error"
+                  variant="contained"
+                  onClick={() =>
+                    setDriver((prev) => ({ ...prev, isLoading: false }))
+                  }
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Actions>
+                <Button
+                  onClick={handleFindDriver}
+                  variant="contained"
+                  fullWidth
+                >
+                  Find driver
+                </Button>
+                <Button
+                  color="error"
+                  onClick={handleClearPath}
+                  variant="contained"
+                  fullWidth
+                >
+                  Clear path
+                </Button>
+              </Actions>
+            )}
           </>
-        ) : (
-          <Actions>
-            <Button onClick={handleFindDriver} variant="contained" fullWidth>
-              Find driver
-            </Button>
-            <Button
-              color="error"
-              onClick={handleClearPath}
-              variant="contained"
-              fullWidth
-            >
-              Clear path
-            </Button>
-          </Actions>
         )}
+        {rights === "driver" &&
+          freeDrives &&
+          freeDrives?.map((drive: any, index) => (
+            <FreeDriveCard data={drive} key={drive._id} />
+          ))}
       </OwnModal>
     </MapWrapper>
   );

@@ -3,10 +3,15 @@ import Auth from "../layouts/Auth";
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { ToastContent, toast } from "react-toastify";
+import axios from "axios";
+import { baseUrl, user } from "../axiosConfig";
+import { Rights } from "../types";
+import { useDispatch } from "react-redux";
+import { setRights } from "../redux/actions";
 
 const LoginPage = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,9 +33,30 @@ const LoginPage = () => {
       toast("Password should contain 8 or more symbols!", { type: "error" });
       return;
     }
+    loginServer();
+  };
 
-    toast("Login succesfully!", { type: "success" });
-    navigate("/");
+  const loginServer = async () => {
+    try {
+      const answer = await axios.get(
+        baseUrl + user + "/" + email + "/" + password,
+        {
+          params: {
+            email,
+            password,
+          },
+        }
+      );
+      const { isAuthorized, rights } = answer.data;
+      console.log(1234324, answer.data);
+      if (isAuthorized) {
+        toast("Login succesfully!", { type: "success" });
+        dispatch(setRights(rights));
+        navigate("/");
+      }
+    } catch (e: any) {
+      toast(e.response.data, { type: "error" });
+    }
   };
 
   return (
