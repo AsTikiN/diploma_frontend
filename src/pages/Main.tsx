@@ -16,9 +16,10 @@ import {
   getUserId,
 } from "../redux/reducers/authReducer";
 import axios from "axios";
-import { baseUrl, drive } from "../axiosConfig";
+import { baseUrl, drive, user } from "../axiosConfig";
 import FreeDriveCard from "../components/Card/FreeDriveCard";
 import Arrow from "../images/arrow";
+import HistoryCard from "../components/Card/HistoryCard";
 
 interface Cord {
   lat: number;
@@ -42,8 +43,11 @@ const Main = () => {
   const [markers, setMarkers] = useState<Cord[]>([]);
   const [driver, setDriver] = useState({
     isLoading: false,
-    name: "Alexandr",
+    name: "",
     avatar: "",
+    distance: "",
+    price: 0,
+    status: "in progress",
   });
   const [freeDrives, setFreeDrives] = useState([]);
   const [isModalOpened, setIsModalOpened] = useState(false);
@@ -56,6 +60,7 @@ const Main = () => {
     setMarkers([]);
     setPath(null);
   };
+  const rightsField = rights === "driver" ? "driverId" : "userId";
 
   const getDigitFromLen = (len: string) =>
     +len.replace(",", ".").replace(" км", "");
@@ -65,16 +70,37 @@ const Main = () => {
     PRICE_FOR_CAR +
     PRICE_PER_STOP * (path?.markers?.length - 2);
 
-  const handleFindDriver = () => {
+  const handleFindDriver = async () => {
     setDriver((prev) => ({ ...prev, isLoading: true }));
     toast("We are trying to find driver!", { type: "default" });
-    axios.post(baseUrl + drive, {
+    const driveResult = await axios.post(baseUrl + drive, {
       price: calcPrice(),
       date: new Date(),
       distance: path?.len,
       userId: personId,
       path: JSON.stringify(path),
     });
+
+    const intervalId = setInterval(async () => {
+      const driveStatus = await axios.get(
+        baseUrl + drive + "/" + driveResult.data._id
+      );
+      console.log(500);
+      if (driveStatus.data.driverId) {
+        const driver = await axios.get(
+          baseUrl + user + "/" + driveStatus.data.driverId
+        );
+        console.log(200200200, driver.data);
+        setDriver((prev) => ({
+          ...prev,
+          isLoading: false,
+          name: driver.data.name,
+          distance: path?.len,
+          price: calcPrice(),
+        }));
+        clearInterval(intervalId);
+      }
+    }, 1500);
   };
 
   useEffect(() => {
@@ -127,7 +153,7 @@ const Main = () => {
           </ToggleModal>
         )}
 
-        {rights === "passanger" && (
+        {rights === "passanger" && !driver.name && (
           <>
             <Typography>Distance: {path?.len || 0}</Typography>
             <Typography>Price: {calcPrice()} GRN</Typography>
@@ -187,6 +213,7 @@ const Main = () => {
             ))}
           </Box>
         )}
+        {driver.name && <HistoryCard data={driver} rightsField={rightsField} />}
       </OwnModal>
     </MapWrapper>
   );

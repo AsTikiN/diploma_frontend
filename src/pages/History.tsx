@@ -12,16 +12,12 @@ const History = () => {
   const [history, setHistory] = useState([]);
   const userId = useSelector(getUserId);
   const rights = useSelector(getRights);
+  const rightsField = rights === "driver" ? "driverId" : "userId";
 
   const getHistory = async () => {
     try {
       const drives: any = await axios.get(baseUrl + drive + "/all");
-      console.log(
-        1231235432,
-        drives.data.map((userId: any) => userId.userId),
-        userId
-      );
-      const rightsField = rights === "driver" ? "driverId" : "passangerId";
+      console.log(707, drives.data);
       setHistory(
         drives.data.filter((drive: any) => drive[rightsField] === userId)
       );
@@ -58,13 +54,12 @@ const History = () => {
         </Box>
       )}
       {history.map((item: any) => (
-        <HistoryCard key={item._id} />
+        <HistoryCard
+          key={item._id}
+          data={{ ...item, status: "completed" }}
+          rightsField={rightsField}
+        />
       ))}
-      {/* 
-      <HistoryCard />
-      <HistoryCard />
-      <HistoryCard />
-      <HistoryCard /> */}
     </Wrapper>
   );
 };
