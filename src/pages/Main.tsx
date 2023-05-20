@@ -110,7 +110,7 @@ const Main = () => {
 
   const fetchAvailibleDrives = async () => {
     const drives: any = await axios.get(baseUrl + drive + "/free");
-    console.log(20130123, drives);
+
     if (drives.data.length) setFreeDrives(drives.data);
   };
 
@@ -120,6 +120,7 @@ const Main = () => {
     const updated = await axios.put(baseUrl + drive + "/" + currentDrive._id, {
       ...currentDrive,
       driverId: personId,
+      status: "in-progress",
     });
     setMarkers(JSON.parse(currentDrive.path)?.markers);
     console.log(2002412, currentDrive);
@@ -201,7 +202,7 @@ const Main = () => {
             sx={{
               overflowY: "auto",
               maxHeight: "300px",
-              paddingBottom: "45px",
+              // paddingBottom: "45px",
             }}
           >
             {freeDrives?.map((drive: any, index) => (
@@ -214,6 +215,16 @@ const Main = () => {
           </Box>
         )}
         {driver.name && <HistoryCard data={driver} rightsField={rightsField} />}
+        <>
+          <Typography>Distance: {path?.len || 0}</Typography>
+          <Typography>Price: {calcPrice()} GRN</Typography>
+
+          <Actions>
+            <Button onClick={handleFindDriver} variant="contained" fullWidth>
+              End drive
+            </Button>
+          </Actions>
+        </>
       </OwnModal>
     </MapWrapper>
   );
