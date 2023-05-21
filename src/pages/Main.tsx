@@ -104,6 +104,28 @@ const Main = () => {
           price: calcPrice(),
         }));
         clearInterval(intervalId);
+        const stopDriveInterval = setInterval(async () => {
+          const driveStatus = await axios.get(
+            baseUrl + drive + "/" + driveResult.data._id
+          );
+
+          if (driveStatus.data.status === "completed") {
+            setDriver({
+              isLoading: false,
+              name: "",
+              avatar: "",
+              distance: "",
+              price: 0,
+              status: "",
+              _id: null,
+              date: "",
+              driverId: null,
+              userId: null,
+              path: "",
+            });
+            clearInterval(stopDriveInterval);
+          }
+        }, 1500);
       }
     }, 1500);
   };
@@ -149,7 +171,16 @@ const Main = () => {
   };
 
   const handleEndDrive = async () => {
-    const { price, date, distance, driverId, userId, path, status } = driver;
+    const { price, date, distance, driverId, userId, path } = driver;
+    console.log(201203123, {
+      price,
+      date,
+      distance,
+      driverId,
+      userId,
+      path,
+      status: "completed",
+    });
     await axios.put(baseUrl + drive + "/" + driver._id, {
       price,
       date,
@@ -157,7 +188,7 @@ const Main = () => {
       driverId,
       userId,
       path,
-      status,
+      status: "completed",
     });
 
     setDriver({
@@ -166,7 +197,7 @@ const Main = () => {
       avatar: "",
       distance: "",
       price: 0,
-      status: "in progress",
+      status: "",
       _id: null,
       date: "",
       driverId: null,
