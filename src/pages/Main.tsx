@@ -48,6 +48,11 @@ const Main = () => {
     distance: "",
     price: 0,
     status: "in progress",
+    _id: null,
+    date: "",
+    driverId: null,
+    userId: null,
+    path: "",
   });
   const [freeDrives, setFreeDrives] = useState([]);
   const [isModalOpened, setIsModalOpened] = useState(false);
@@ -111,7 +116,7 @@ const Main = () => {
   const fetchAvailibleDrives = async () => {
     const drives: any = await axios.get(baseUrl + drive + "/free");
 
-    if (drives.data.length) setFreeDrives(drives.data);
+    if (drives.data) setFreeDrives(drives.data);
   };
 
   const handleStart = (currentDrive: any) => async () => {
@@ -122,11 +127,67 @@ const Main = () => {
       driverId: personId,
       status: "in-progress",
     });
+    const { userId, distance, price, status, _id, date, driverId, path } =
+      updated?.data;
+    const userData = await axios.get(baseUrl + user + "/" + userId);
+    const { name } = userData.data;
+    setDriver({
+      isLoading: false,
+      name,
+      avatar: "",
+      distance,
+      price,
+      status,
+      date,
+      _id,
+      driverId,
+      path,
+      userId,
+    });
     setMarkers(JSON.parse(currentDrive.path)?.markers);
     console.log(2002412, currentDrive);
   };
 
-  console.log(123213, freeDrives);
+  const handleEndDrive = async () => {
+    const { price, date, distance, driverId, userId, path, status } = driver;
+    await axios.put(baseUrl + drive + "/" + driver._id, {
+      price,
+      date,
+      distance,
+      driverId,
+      userId,
+      path,
+      status,
+    });
+
+    setDriver({
+      isLoading: false,
+      name: "",
+      avatar: "",
+      distance: "",
+      price: 0,
+      status: "in progress",
+      _id: null,
+      date: "",
+      driverId: null,
+      userId: null,
+      path: "",
+    });
+    setPath("");
+    setMarkers([]);
+    setMapRoute(null);
+
+    fetchAvailibleDrives();
+  };
+
+  useEffect(() => {
+    let intervalId: any = null;
+    if (rights === "driver") {
+      intervalId = setInterval(() => fetchAvailibleDrives(), 3000);
+    }
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <MapWrapper>
       <Map
@@ -197,7 +258,7 @@ const Main = () => {
             )}
           </>
         )}
-        {rights === "driver" && freeDrives && (
+        {rights === "driver" && freeDrives && !driver.name && (
           <Box
             sx={{
               overflowY: "auto",
@@ -212,19 +273,29 @@ const Main = () => {
                 onStart={handleStart(drive)}
               />
             ))}
+            {!freeDrives.length && (
+              <Placeholder>
+                <Typography variant="h5">No drives yet</Typography>{" "}
+              </Placeholder>
+            )}
           </Box>
         )}
-        {driver.name && <HistoryCard data={driver} rightsField={rightsField} />}
-        <>
-          <Typography>Distance: {path?.len || 0}</Typography>
-          <Typography>Price: {calcPrice()} GRN</Typography>
+        {rights === "passanger" && driver.name && (
+          <HistoryCard data={driver} rightsField={rightsField} />
+        )}
+        {rights === "driver" && driver.name && (
+          <>
+            <Typography>Passanger name: {driver.name}</Typography>
+            <Typography>Distance: {path?.len || 0}</Typography>
+            <Typography>Price: {calcPrice()} GRN</Typography>
 
-          <Actions>
-            <Button onClick={handleFindDriver} variant="contained" fullWidth>
-              End drive
-            </Button>
-          </Actions>
-        </>
+            <Actions>
+              <Button onClick={handleEndDrive} variant="contained" fullWidth>
+                End drive
+              </Button>
+            </Actions>
+          </>
+        )}
       </OwnModal>
     </MapWrapper>
   );
@@ -282,6 +353,13 @@ const Actions = styled("div")({
   display: "flex",
   gap: "10px",
   marginTop: "15px",
+});
+
+const Placeholder = styled("div")({
+  height: "150px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
 });
 
 export default Main;
