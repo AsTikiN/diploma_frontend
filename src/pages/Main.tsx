@@ -84,18 +84,19 @@ const Main = () => {
       distance: path?.len,
       userId: personId,
       path: JSON.stringify(path),
+      status: "in-progress",
     });
 
     const intervalId = setInterval(async () => {
       const driveStatus = await axios.get(
         baseUrl + drive + "/" + driveResult.data._id
       );
-      console.log(500);
+
       if (driveStatus.data.driverId) {
         const driver = await axios.get(
           baseUrl + user + "/" + driveStatus.data.driverId
         );
-        console.log(200200200, driver.data);
+
         setDriver((prev) => ({
           ...prev,
           isLoading: false,
@@ -172,15 +173,7 @@ const Main = () => {
 
   const handleEndDrive = async () => {
     const { price, date, distance, driverId, userId, path } = driver;
-    console.log(201203123, {
-      price,
-      date,
-      distance,
-      driverId,
-      userId,
-      path,
-      status: "completed",
-    });
+
     await axios.put(baseUrl + drive + "/" + driver._id, {
       price,
       date,
@@ -219,6 +212,64 @@ const Main = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  const getPersonalDrives = async () => {
+    const userDrives: any = await axios.get(
+      baseUrl + drive + "/personal/" + personId
+    );
+    const { distance, driverId, userId, date, price, status, _id, path }: any =
+      userDrives?.data;
+    const driverData = await axios.get(baseUrl + user + "/" + driverId);
+    setDriver({
+      isLoading: false,
+      name: driverData.data.name,
+      avatar: "",
+      distance,
+      driverId,
+      userId,
+      date,
+      price,
+      status,
+      _id,
+      path,
+    });
+    setPath(JSON.parse(path));
+    setIsModalOpened(true);
+    const intervalId = setInterval(async () => {
+      const userDrives: any = await axios.get(baseUrl + drive + "/" + _id);
+      const { status } = userDrives.data;
+      if (status === "completed") {
+        setDriver({
+          isLoading: false,
+          name: "",
+          avatar: "",
+          distance: "",
+          price: 0,
+          status: "",
+          _id: null,
+          date: "",
+          driverId: null,
+          userId: null,
+          path: "",
+        });
+        setPath("");
+        setMarkers([]);
+        setMapRoute(null);
+        setIsModalOpened(false);
+        clearInterval(intervalId);
+      }
+    }, 3000);
+  };
+
+  useEffect(() => {
+    console.log(personId);
+
+    if (rights === "passanger" && personId) {
+      getPersonalDrives();
+    }
+  }, [personId, rights]);
+
+  console.log(driver);
+
   return (
     <MapWrapper>
       <Map
@@ -228,7 +279,7 @@ const Main = () => {
         setMapRoute={setMapRoute}
         markers={markers}
         setMarkers={setMarkers}
-        editMode={rights === "passanger"}
+        editMode={rights === "passanger" && !driver.name}
         setPath={setPath}
         path={path}
       />

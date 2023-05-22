@@ -64,7 +64,7 @@ const Map: FC<Props> = ({
 
   const findRoute = async ({ start, end, points = [] }: FindRouteProps) => {
     if (!start || !end) return;
-    console.log(123123, start.lat, start.lng, end.lat, end.lng);
+
     try {
       const directionService = new google.maps.DirectionsService();
       const results = await directionService.route({
