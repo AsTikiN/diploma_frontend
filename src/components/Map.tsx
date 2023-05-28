@@ -1,12 +1,22 @@
-import React, { useState, useEffect, ReactElement, FC, Dispatch } from "react";
+import React, {
+  useState,
+  useEffect,
+  ReactElement,
+  FC,
+  Dispatch,
+  useRef,
+} from "react";
 import {
   useJsApiLoader,
   GoogleMap,
   Marker,
   DirectionsRenderer,
+  Autocomplete,
 } from "@react-google-maps/api";
-import { Box, styled } from "@mui/material";
+import { Box, Button, TextField, styled } from "@mui/material";
 import { options } from "../mapOptions";
+import PlaceParker from "../images/placeMarker";
+import { toast } from "react-toastify";
 
 interface Cord {
   lat: number;
@@ -42,6 +52,8 @@ const Map: FC<Props> = ({
   markers,
   setMarkers,
 }): ReactElement => {
+  const searchFieldRef = useRef<any>(null);
+
   useEffect(() => {
     if (markers.length > 1) {
       findRoute({
@@ -61,6 +73,27 @@ const Map: FC<Props> = ({
       setMarkers(path.markers);
     }
   }, [path]);
+
+  const getLatlongFromPlace = (address: string) => {
+    const geocoder = new google.maps.Geocoder();
+    // var address = document.getElementById("textboxid").value;
+    geocoder.geocode(
+      {
+        address,
+      },
+      (results: any, status) => {
+        if (status === google.maps.GeocoderStatus.OK) {
+          var latitude = results[0].geometry.location.lat();
+          var longitude = results[0].geometry.location.lng();
+
+          setMarkers((prev: Marker[]) => [
+            ...prev,
+            { lat: latitude, lng: longitude },
+          ]);
+        }
+      }
+    );
+  };
 
   const findRoute = async ({ start, end, points = [] }: FindRouteProps) => {
     if (!start || !end) return;
@@ -95,6 +128,13 @@ const Map: FC<Props> = ({
     }
   };
 
+  const handleSetMarkerOnPlace = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const element = searchFieldRef?.current;
+    const value = element.firstChild.firstChild.value;
+    console.log(value, markers);
+    getLatlongFromPlace(value);
+  };
+
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
     if (!e.latLng || !editMode) return;
 
@@ -120,6 +160,17 @@ const Map: FC<Props> = ({
       onClick={handleMapClick}
       options={options}
     >
+      <SearchPlace>
+        <Autocomplete>
+          <SearchField ref={searchFieldRef} fullWidth />
+        </Autocomplete>
+        <Button
+          sx={{ position: "absolute", right: 0 }}
+          onClick={handleSetMarkerOnPlace}
+        >
+          <PlaceParker />
+        </Button>
+      </SearchPlace>
       {mapRoute && <DirectionsRenderer directions={mapRoute} />}
       {markers.map((marker: Cord, index: number) => (
         <Marker
@@ -134,10 +185,26 @@ const Map: FC<Props> = ({
   );
 };
 
-const Label = styled(Box)({
-  width: "20px",
-  height: "20px",
-  background: "red",
+const SearchPlace = styled(Box)({
+  position: "absolute",
+  left: "10px",
+  top: "60px",
+  // transform: "translate(-50%, -50%)",
+  background: "#fff",
+  borderRadius: "4px",
+  width: "calc(100% - 20px)",
+  display: "flex",
+  gap: "10px",
+
+  "& > div": {
+    flex: 1,
+  },
+});
+
+const SearchField = styled(TextField)({
+  input: {
+    paddingRight: "60px",
+  },
 });
 
 export default Map;

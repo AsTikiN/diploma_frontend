@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  TextField,
   Typography,
   styled,
 } from "@mui/material";
@@ -53,13 +54,15 @@ const Main = () => {
     driverId: null,
     userId: null,
     path: "",
+    comment: "",
   });
   const [freeDrives, setFreeDrives] = useState([]);
   const [isModalOpened, setIsModalOpened] = useState(false);
+  const [commentData, setCommentData] = useState("");
 
   const rights = useSelector(getRights);
   const personId = useSelector(getUserId);
-  console.log(23123, personId);
+
   const handleClearPath = () => {
     setMapRoute(null);
     setMarkers([]);
@@ -85,6 +88,7 @@ const Main = () => {
       userId: personId,
       path: JSON.stringify(path),
       status: "in-progress",
+      comment: commentData,
     });
 
     const intervalId = setInterval(async () => {
@@ -123,6 +127,7 @@ const Main = () => {
               driverId: null,
               userId: null,
               path: "",
+              comment: "",
             });
             clearInterval(stopDriveInterval);
           }
@@ -150,8 +155,17 @@ const Main = () => {
       driverId: personId,
       status: "in-progress",
     });
-    const { userId, distance, price, status, _id, date, driverId, path } =
-      updated?.data;
+    const {
+      userId,
+      distance,
+      price,
+      status,
+      _id,
+      date,
+      driverId,
+      path,
+      comment,
+    } = updated?.data;
     const userData = await axios.get(baseUrl + user + "/" + userId);
     const { name } = userData.data;
     setDriver({
@@ -166,7 +180,9 @@ const Main = () => {
       driverId,
       path,
       userId,
+      comment,
     });
+    setCommentData(comment);
     setMarkers(JSON.parse(currentDrive.path)?.markers);
     console.log(2002412, currentDrive);
   };
@@ -196,6 +212,7 @@ const Main = () => {
       driverId: null,
       userId: null,
       path: "",
+      comment: "",
     });
     setPath("");
     setMarkers([]);
@@ -216,8 +233,17 @@ const Main = () => {
     const userDrives: any = await axios.get(
       baseUrl + drive + "/personal/" + personId
     );
-    const { distance, driverId, userId, date, price, status, _id, path }: any =
-      userDrives?.data;
+    const {
+      distance,
+      driverId,
+      userId,
+      date,
+      price,
+      status,
+      _id,
+      path,
+      comment,
+    }: any = userDrives?.data;
     const driverData = await axios.get(baseUrl + user + "/" + driverId);
     setDriver({
       isLoading: false,
@@ -231,6 +257,7 @@ const Main = () => {
       status,
       _id,
       path,
+      comment,
     });
     setPath(JSON.parse(path));
     setIsModalOpened(true);
@@ -250,6 +277,7 @@ const Main = () => {
           driverId: null,
           userId: null,
           path: "",
+          comment: "",
         });
         setPath("");
         setMarkers([]);
@@ -301,9 +329,22 @@ const Main = () => {
           <>
             <Typography>Distance: {path?.len || 0}</Typography>
             <Typography>Price: {calcPrice()} GRN</Typography>
+            <TextField
+              fullWidth
+              variant="standard"
+              placeholder="comment"
+              disabled={driver.isLoading}
+              value={commentData}
+              onChange={(e: any) => setCommentData(e.target.value)}
+            />
             {driver.isLoading ? (
               <>
-                <Box display="flex" flexDirection="column" alignItems="center">
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  mt={1}
+                >
                   <CircularProgress />
                   <Typography>Trying to find driver</Typography>
                 </Box>
@@ -370,6 +411,7 @@ const Main = () => {
             <Typography>Passanger name: {driver.name}</Typography>
             <Typography>Distance: {path?.len || 0}</Typography>
             <Typography>Price: {calcPrice()} GRN</Typography>
+            {commentData && <Typography>Comment: {commentData}</Typography>}
 
             <Actions>
               <Button onClick={handleEndDrive} variant="contained" fullWidth>
