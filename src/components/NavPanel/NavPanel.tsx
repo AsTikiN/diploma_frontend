@@ -19,7 +19,7 @@ const NavPanel = () => {
   const onNav = (route: string) => () => {
     if (!isAuthorized) {
       navigate("/login");
-      toast("You must be logined!", { type: "error" });
+      toast("You must be logged!", { type: "error" });
       return;
     }
     navigate(route);
