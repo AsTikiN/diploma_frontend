@@ -35,3 +35,8 @@ export const setRights = (
   type: ActionsTypes.SET_RIGHTS,
   payload: { rights, _id, isAuthorizated },
 });
+
+export const setUserData = ({ email, password, avatar, name }: any) => ({
+  type: ActionsTypes.SET_USER_DATA,
+  payload: { email, password, avatar, name },
+});

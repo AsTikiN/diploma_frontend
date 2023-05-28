@@ -17,7 +17,6 @@ const History = () => {
   const getHistory = async () => {
     try {
       const drives: any = await axios.get(baseUrl + drive + "/all");
-      console.log(707, drives.data);
       setHistory(
         drives.data.filter((drive: any) => drive[rightsField] === userId)
       );

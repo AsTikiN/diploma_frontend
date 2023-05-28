@@ -8,7 +8,7 @@ import axios from "axios";
 import { baseUrl, user } from "../axiosConfig";
 import { Rights } from "../types";
 import { useDispatch } from "react-redux";
-import { setRights } from "../redux/actions";
+import { setRights, setUserData } from "../redux/actions";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -47,10 +47,13 @@ const LoginPage = () => {
           },
         }
       );
-      const { isAuthorized, rights, id } = answer.data;
+      const { isAuthorized, rights, id, avatar, name } = answer.data;
+      console.log("answer", answer.data);
       if (isAuthorized) {
         toast("Login succesfully!", { type: "success" });
         dispatch(setRights(rights, id, true));
+        console.log("500", typeof avatar, answer.data.avatar);
+        dispatch(setUserData({ email, password, avatar, name }));
         navigate("/");
       }
     } catch (e: any) {

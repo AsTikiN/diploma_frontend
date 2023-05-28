@@ -10,11 +10,18 @@ import {
 import React from "react";
 
 const FreeDriveCard = ({ data, onStart }: any) => {
-  console.log(onStart);
+  // useEffect(() => {
+  //   first;
+
+  //   return () => {
+  //     second;
+  //   };
+  // }, [data]);
+
   return (
     <StyledCard variant="elevation">
       <Box display="flex" alignItems="center" gap="20px">
-        <Avatar />
+        <Avatar src={""} />
         <Typography variant="h6">Passanger: Alexandr</Typography>
       </Box>
       <Box
