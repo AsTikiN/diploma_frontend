@@ -56,7 +56,7 @@ const History = () => {
         <HistoryCard
           key={item._id}
           data={{ ...item, status: "completed" }}
-          rightsField={rightsField}
+          rights={rights}
         />
       ))}
     </Wrapper>

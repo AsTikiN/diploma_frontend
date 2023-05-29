@@ -160,17 +160,19 @@ const Map: FC<Props> = ({
       onClick={handleMapClick}
       options={options}
     >
-      <SearchPlace>
-        <Autocomplete>
-          <SearchField ref={searchFieldRef} fullWidth />
-        </Autocomplete>
-        <Button
-          sx={{ position: "absolute", right: 0 }}
-          onClick={handleSetMarkerOnPlace}
-        >
-          <PlaceParker />
-        </Button>
-      </SearchPlace>
+      {editMode && (
+        <SearchPlace>
+          <Autocomplete>
+            <SearchField ref={searchFieldRef} fullWidth />
+          </Autocomplete>
+          <Button
+            sx={{ position: "absolute", right: 0 }}
+            onClick={handleSetMarkerOnPlace}
+          >
+            <PlaceParker />
+          </Button>
+        </SearchPlace>
+      )}
       {mapRoute && <DirectionsRenderer directions={mapRoute} />}
       {markers.map((marker: Cord, index: number) => (
         <Marker

@@ -3,15 +3,16 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { baseUrl, user } from "../../axiosConfig";
 
-const HistoryCard = ({ data, rightsField }: any) => {
+const HistoryCard = ({ data, rights, avatar }: any) => {
   const [currentUser, setCurrentUser] = useState<string>("");
+  const rightsField = rights === "driver" ? "userId" : "driverId";
   console.log(222, data);
 
   const getUser = async () => {
     const currentUser: any = await axios.get(
       baseUrl + user + "/" + data[rightsField]
     );
-    console.log(currentUser);
+    console.log("currentUser", currentUser);
     setCurrentUser(currentUser.data.name);
   };
 
@@ -23,7 +24,7 @@ const HistoryCard = ({ data, rightsField }: any) => {
   return (
     <StyledCard variant="elevation">
       <Box display="flex" alignItems="center" gap="20px">
-        <Avatar />
+        <Avatar src={avatar} />
         <Typography variant="h6">{currentUser || data.name}</Typography>
       </Box>
       <Box

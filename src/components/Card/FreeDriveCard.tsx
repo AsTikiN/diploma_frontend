@@ -7,22 +7,33 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { getRights } from "../../redux/reducers/authReducer";
+import axios from "axios";
+import { baseUrl, user } from "../../axiosConfig";
+import { getLoginData } from "../../redux/reducers/authReducer";
 
 const FreeDriveCard = ({ data, onStart }: any) => {
-  // useEffect(() => {
-  //   first;
+  const [userData, setUserData] = useState<any>(null);
 
-  //   return () => {
-  //     second;
-  //   };
-  // }, [data]);
+  const getUserAvatar = async () => {
+    const userData = await axios.get(baseUrl + user + "/" + data.userId);
+
+    setUserData(userData.data);
+  };
+
+  useEffect(() => {
+    if (data.userId) {
+      getUserAvatar();
+    }
+  }, [data]);
 
   return (
     <StyledCard variant="elevation">
       <Box display="flex" alignItems="center" gap="20px">
-        <Avatar src={""} />
-        <Typography variant="h6">Passanger: Alexandr</Typography>
+        <Avatar src={userData?.avatar} />
+        <Typography variant="h6">Passanger: {userData?.name}</Typography>
       </Box>
       <Box
         display="flex"
