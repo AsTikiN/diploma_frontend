@@ -105,13 +105,13 @@ const Profile = () => {
       </ImageWrapper>
       <Info>
         <Typography variant="h6" fontWeight={"700"}>
-          Name: {name}
+          Ім'я профілю: {name}
         </Typography>
         <Typography variant="h6" fontWeight={"700"}>
-          Email: {email}
+          Пошта: {email}
         </Typography>
         <Typography variant="h6" fontWeight={"700"}>
-          Password: {password}
+          Пароль: {password}
         </Typography>
       </Info>
       {chartData && (
@@ -121,7 +121,7 @@ const Profile = () => {
             title: chartData
               .reduce((acc: any, data: any) => (acc += data.uv), 0)
               .toFixed(0),
-            value: "Total earnings",
+            value: "Всього зароблено",
           }}
         />
       )}

@@ -24,17 +24,17 @@ const RegisterPage = () => {
 
   const handleSubmit = () => {
     if (!name || !email || !password) {
-      toast("All fields are required!", { type: "error" });
+      toast("Усі поля є обов'язковими!", { type: "error" });
       return;
     }
 
     if (!email.includes("@") || !email.includes(".")) {
-      toast("Incorrect email!", { type: "error" });
+      toast("Помилка при введенні пошти!", { type: "error" });
       return;
     }
 
     if (password.length < 8) {
-      toast("Password should contain 8 or more symbols!", { type: "error" });
+      toast("Пароль має складатись з 8 та більше символів!", { type: "error" });
       return;
     }
     console.log(200);
@@ -49,7 +49,7 @@ const RegisterPage = () => {
         password,
         rights: driver ? "driver" : "passanger",
       });
-      toast("Account succesfully added!", { type: "success" });
+      toast("Аккаует успішно створено!", { type: "success" });
       navigate("/login");
     } catch (e: any) {
       toast(e.response.data, { type: "error" });
@@ -59,41 +59,41 @@ const RegisterPage = () => {
   return (
     <Auth>
       <Wrapper>
-        <Typography variant="h3">Register</Typography>
+        <Typography variant="h3">Реєстрація</Typography>
         <TextField
           value={name}
           onChange={handleChange(setName)}
           fullWidth
-          label="name"
+          label="Ім'я користувача"
         />
         <TextField
           value={email}
           onChange={handleChange(setEmail)}
           fullWidth
-          label="email"
+          label="Пошта"
         />
         <TextField
           value={password}
           onChange={handleChange(setPassword)}
           fullWidth
-          label="password"
+          label="Пароль"
           type="password"
         />
         <FormControlLabel
           sx={{ width: "100%", position: "absolute", top: "315px" }}
           control={<Checkbox />}
-          label="I'm a driver"
+          label="Акаунт водія"
           value={driver}
           onChange={() => setDriver(!driver)}
         />
-        <Login onClick={() => navigate("/login")}>login</Login>
+        <Login onClick={() => navigate("/login")}>Увійти</Login>
         <Button
           onClick={handleSubmit}
           sx={{ mt: "10px" }}
           variant="contained"
           fullWidth
         >
-          Register
+          Зареєструватися
         </Button>
       </Wrapper>
     </Auth>

@@ -163,7 +163,11 @@ const Map: FC<Props> = ({
       {editMode && (
         <SearchPlace>
           <Autocomplete>
-            <SearchField ref={searchFieldRef} fullWidth />
+            <SearchField
+              placeholder="Введіть адресу"
+              ref={searchFieldRef}
+              fullWidth
+            />
           </Autocomplete>
           <Button
             sx={{ position: "absolute", right: 0 }}

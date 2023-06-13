@@ -80,7 +80,7 @@ const Main = () => {
 
   const handleFindDriver = async () => {
     setDriver((prev) => ({ ...prev, isLoading: true }));
-    toast("We are trying to find driver!", { type: "default" });
+    toast("Зачекайте доки ми знайдемо водія!", { type: "default" });
     const driveResult = await axios.post(baseUrl + drive, {
       price: calcPrice(),
       date: new Date(),
@@ -107,6 +107,7 @@ const Main = () => {
           name: driver.data.name,
           distance: path?.len,
           price: calcPrice(),
+          driverId: driveStatus.data.driverId,
         }));
         clearInterval(intervalId);
         const stopDriveInterval = setInterval(async () => {
@@ -130,6 +131,7 @@ const Main = () => {
               comment: "",
             });
             clearInterval(stopDriveInterval);
+            clearInterval(intervalId);
           }
         }, 1500);
       }
@@ -143,8 +145,16 @@ const Main = () => {
 
   const fetchAvailibleDrives = async () => {
     const drives: any = await axios.get(baseUrl + drive + "/free");
+    let data = [];
+    if (personId === "64613aede0b8b413c52fa834") {
+      data = drives.data.slice(0, drives.data.length / 2);
+    }
 
-    if (drives.data) setFreeDrives(drives.data);
+    if (personId === "647986fd3c35b602228a2e11") {
+      data = drives.data.slice(drives.data.length / 2, drives.data.length);
+    }
+
+    if (drives.data) setFreeDrives(data);
   };
 
   const handleStart = (currentDrive: any) => async () => {
@@ -327,12 +337,12 @@ const Main = () => {
 
         {rights === "passanger" && !driver.name && (
           <>
-            <Typography>Distance: {path?.len || 0}</Typography>
-            <Typography>Price: {calcPrice()} GRN</Typography>
+            <Typography>Дистанція: {path?.len || 0}</Typography>
+            <Typography>Вартість: {calcPrice()} GRN</Typography>
             <TextField
               fullWidth
               variant="standard"
-              placeholder="comment"
+              placeholder="Ваш коментар"
               disabled={driver.isLoading}
               value={commentData}
               onChange={(e: any) => setCommentData(e.target.value)}
@@ -346,7 +356,7 @@ const Main = () => {
                   mt={1}
                 >
                   <CircularProgress />
-                  <Typography>Trying to find driver</Typography>
+                  <Typography>Зачекайте доки ми знайдемо водія</Typography>
                 </Box>
                 <Button
                   sx={{ mt: 1.5 }}
@@ -357,7 +367,7 @@ const Main = () => {
                     setDriver((prev) => ({ ...prev, isLoading: false }))
                   }
                 >
-                  Cancel
+                  Відмінити
                 </Button>
               </>
             ) : (
@@ -367,7 +377,7 @@ const Main = () => {
                   variant="contained"
                   fullWidth
                 >
-                  Find driver
+                  Пошук водія
                 </Button>
                 <Button
                   color="error"
@@ -375,7 +385,7 @@ const Main = () => {
                   variant="contained"
                   fullWidth
                 >
-                  Clear path
+                  Очистити шлях
                 </Button>
               </Actions>
             )}
@@ -398,24 +408,28 @@ const Main = () => {
             ))}
             {!freeDrives.length && (
               <Placeholder>
-                <Typography variant="h5">No drives yet</Typography>{" "}
+                <Typography variant="h5">Поки немає замовлень</Typography>{" "}
               </Placeholder>
             )}
           </Box>
         )}
         {rights === "passanger" && driver.name && (
-          <HistoryCard data={driver} rightsField={rightsField} />
+          <HistoryCard
+            data={driver}
+            rightsField={rightsField}
+            carNumber="AE5470IO"
+          />
         )}
         {rights === "driver" && driver.name && (
           <>
-            <Typography>Passanger name: {driver.name}</Typography>
-            <Typography>Distance: {path?.len || 0}</Typography>
-            <Typography>Price: {calcPrice()} GRN</Typography>
-            {commentData && <Typography>Comment: {commentData}</Typography>}
+            <Typography>Ім'я пасажира: {driver.name}</Typography>
+            <Typography>Дистанція: {path?.len || 0}</Typography>
+            <Typography>Вартість: {calcPrice()} GRN</Typography>
+            {commentData && <Typography>Коментар: {commentData}</Typography>}
 
             <Actions>
               <Button onClick={handleEndDrive} variant="contained" fullWidth>
-                End drive
+                Завершити
               </Button>
             </Actions>
           </>

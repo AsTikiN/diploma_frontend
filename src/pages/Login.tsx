@@ -20,17 +20,17 @@ const LoginPage = () => {
 
   const handleSubmit = () => {
     if (!email || !password) {
-      toast("All fields are required!", { type: "error" });
+      toast("Заповність усі поля!", { type: "error" });
       return;
     }
 
     if (!email.includes("@") || !email.includes(".")) {
-      toast("Incorrect email!", { type: "error" });
+      toast("Не вірна пошта!", { type: "error" });
       return;
     }
 
     if (password.length < 8) {
-      toast("Password should contain 8 or more symbols!", { type: "error" });
+      toast("Пароль має складатись з 8 та більше символів!", { type: "error" });
       return;
     }
     loginServer();
@@ -50,7 +50,7 @@ const LoginPage = () => {
       const { isAuthorized, rights, id, avatar, name } = answer.data;
       console.log("answer", answer.data);
       if (isAuthorized) {
-        toast("Login succesfully!", { type: "success" });
+        toast("Вдала авторизація!", { type: "success" });
         dispatch(setRights(rights, id, true));
         console.log("500", typeof avatar, answer.data.avatar);
         dispatch(setUserData({ email, password, avatar, name }));
@@ -64,28 +64,28 @@ const LoginPage = () => {
   return (
     <Auth>
       <Wrapper>
-        <Typography variant="h3">Login</Typography>
+        <Typography variant="h3">Авторизація</Typography>
         <TextField
           value={email}
           onChange={handleChange(setEmail)}
           fullWidth
-          label="email"
+          label="Пошта"
         />
         <TextField
           value={password}
           onChange={handleChange(setPassword)}
           fullWidth
-          label="password"
+          label="Пароль"
           type="password"
         />
-        <Register onClick={() => navigate("/register")}>Register</Register>
+        <Register onClick={() => navigate("/register")}>Реєстрація</Register>
         <Button
           onClick={handleSubmit}
           sx={{ mt: "10px" }}
           variant="contained"
           fullWidth
         >
-          Login
+          Увійти
         </Button>
       </Wrapper>
     </Auth>

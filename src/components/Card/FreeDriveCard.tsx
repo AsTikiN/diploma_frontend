@@ -43,11 +43,11 @@ const FreeDriveCard = ({ data, onStart }: any) => {
         mt={1.5}
       >
         <Box>
-          <Typography variant="h6">Distance: {data.distance}</Typography>
-          <Typography variant="h6">Cost: {data.price} GRN</Typography>
+          <Typography variant="h6">Відстань: {data.distance}</Typography>
+          <Typography variant="h6">Вартість: {data.price} ГРН</Typography>
         </Box>
         <Button color="success" variant="contained" onClick={onStart}>
-          Accept
+          Прийняти
         </Button>
       </Box>
     </StyledCard>

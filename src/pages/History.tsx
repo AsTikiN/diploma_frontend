@@ -21,7 +21,7 @@ const History = () => {
         drives.data.filter((drive: any) => drive[rightsField] === userId)
       );
     } catch (e) {
-      toast("Error while getting history!", { type: "error" });
+      toast("Помилка при отриманні даних з серверу!", { type: "error" });
     }
   };
 
@@ -47,7 +47,7 @@ const History = () => {
           <ImageIcon sx={{ color: "text.tertiary", fontSize: "250px" }} />
           <div>
             <Typography variant="h5" mt={2}>
-              You didn't have any rides yet!
+              Доки немає жонхих перевезень!
             </Typography>
           </div>
         </Box>
@@ -57,6 +57,7 @@ const History = () => {
           key={item._id}
           data={{ ...item, status: "completed" }}
           rights={rights}
+          rate={true}
         />
       ))}
     </Wrapper>
